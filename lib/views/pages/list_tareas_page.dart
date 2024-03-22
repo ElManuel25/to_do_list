@@ -97,9 +97,29 @@ class ListTareasPage extends StatelessWidget {
               fontStyle: FontStyle.italic,
             ),
           ),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () => deleteTarea(_key, tarea, provider),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Checkbox(
+                value: tarea.estaCompleta,
+                onChanged: (newValue) {
+                  updateTareaCompleta(_key, tarea, provider, newValue!);
+                },
+                checkColor: Colors.white, // Color del marcador
+                fillColor: MaterialStateProperty.resolveWith((states) {
+                  if (states.contains(MaterialState.selected)) {
+                    return Colors
+                        .blue; // Color de relleno cuando está seleccionado
+                  }
+                  return Colors
+                      .grey; // Color de relleno cuando no está seleccionado
+                }),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                onPressed: () => deleteTarea(_key, tarea, provider),
+              ),
+            ],
           ),
         ),
       ),

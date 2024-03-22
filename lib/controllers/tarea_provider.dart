@@ -14,8 +14,13 @@ class TareaProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  deleteTarea(Tarea tarea){
+  deleteTarea(Tarea tarea) {
     _tareas.remove(tarea);
+    notifyListeners();
+  }
+
+  updateTareaCompleta(Tarea tarea, bool newValue) {
+    tarea.estaCompleta = newValue;
     notifyListeners();
   }
 }

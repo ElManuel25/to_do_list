@@ -6,11 +6,12 @@ class Tarea {
   Tarea({
     required this.tareaTitle,
     required this.tareaTexto,
-    this.estaCompleta = false
+    this.estaCompleta = false,
   });
 
   Tarea.empty() {
     tareaTitle = "";
     tareaTexto = "";
+    estaCompleta = false;
   }
 }
