@@ -20,19 +20,34 @@ class ListTareasPage extends StatelessWidget {
           return getListView(tareaProvider);
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navegar a la pagina de crear contacto
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => CreateTareaPage(),
-            ),
-          );
-        },
-        child: const Icon(Icons.add),
+      bottomNavigationBar: BottomAppBar(
+        color: const Color.fromRGBO(20, 34, 103, 0.765),
+        child: Container(
+          height: 60,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Agregar tarea',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Navegar a la página de crear tarea
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CreateTareaPage(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add, color: Colors.white, size: 30),
+              ),
+            ],
+          ),
+        ),
       ),
     );
-    // Text("CREAR UNA LISTA DENTRO DE UN SCAFFOLD");
   }
 
   Widget getListView(TareaProvider provider) {
@@ -57,7 +72,7 @@ class ListTareasPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Container(
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 237, 245, 13),
+          color: Color.fromARGB(188, 237, 245, 13),
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
