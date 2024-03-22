@@ -1,18 +1,20 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/widgets.dart';
 import 'package:to_do_list/controllers/tarea_provider.dart';
 import 'package:to_do_list/controllers/tarea_controller.dart';
 import 'package:to_do_list/models/tarea.dart';
 
+// ignore: must_be_immutable
 class CreateTareaPage extends StatelessWidget {
   // Atributos
   String title = "Crear tarea";
   final GlobalKey<FormState> _key = GlobalKey();
 
-  Tarea tarea = Tarea.empty();
+  Tarea tarea;
+
+  CreateTareaPage.create() : tarea = Tarea.empty();
+
+  CreateTareaPage.edit(this.tarea);
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +34,9 @@ class CreateTareaPage extends StatelessWidget {
     return Form(
       key: _key,
       child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: formElements(provider, context)),
+        padding: const EdgeInsets.all(16.0),
+        child: formElements(provider, context),
+      ),
     );
   }
 
@@ -52,6 +55,7 @@ class CreateTareaPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             TextFormField(
+              initialValue: tarea.tareaTitle,
               onChanged: (value) => tarea.tareaTitle = value,
               validator: validateField,
               decoration: const InputDecoration(
@@ -71,6 +75,7 @@ class CreateTareaPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             TextFormField(
+              initialValue: tarea.tareaTexto,
               maxLines: 8,
               onChanged: (value) => tarea.tareaTexto = value,
               validator: validateField,
@@ -85,10 +90,22 @@ class CreateTareaPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                createButton(context, Colors.red, "Cancelar", provider, false),
+                createButton(
+                  context,
+                  Colors.red,
+                  "Cancelar",
+                  () => Navigator.pop(context),
+                ),
                 const SizedBox(width: 16),
                 createButton(
-                    context, Colors.lightBlue, "Guardar", provider, true)
+                  context,
+                  Colors.lightBlue,
+                  "Guardar",
+                  () {
+                    saveTarea(_key, tarea, provider);
+                    Navigator.pop(context);
+                  },
+                )
               ],
             )
           ],
@@ -98,14 +115,9 @@ class CreateTareaPage extends StatelessWidget {
   }
 
   ElevatedButton createButton(
-      BuildContext context, Color color, String texto, provider, bool bool) {
+      BuildContext context, Color color, String texto, Function() onPressed) {
     return ElevatedButton(
-      onPressed: () {
-        if (bool == true) {
-          saveTarea(_key, tarea, provider);
-        }
-        Navigator.pop(context);
-      },
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         shape: RoundedRectangleBorder(
