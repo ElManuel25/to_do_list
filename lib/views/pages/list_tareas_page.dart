@@ -11,7 +11,7 @@ class ListTareasPage extends StatefulWidget {
 class _ListTareasPageState extends State<ListTareasPage> {
   String title = "Lista de tareas";
   Color appbarsColor = const Color.fromRGBO(20, 34, 103, 0.765);
-  final GlobalKey<FormState> _key = GlobalKey();
+  final GlobalKey<FormState> key = GlobalKey();
   String filtroSeleccionado = 'Todas'; 
   TaskController _taskController = TaskController();
 
@@ -115,124 +115,132 @@ class _ListTareasPageState extends State<ListTareasPage> {
   }
 
   Widget tareaWidget(BuildContext context, Tarea tarea) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(188, 237, 245, 13),
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: const Color.fromARGB(255, 255, 0, 0).withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+    child: Container(
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(188, 237, 245, 13),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(255, 255, 0, 0).withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ListTile(
+        title: Text(
+          tarea.tareaTitle,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        subtitle: Text(
+          tarea.tareaTexto,
+          style: const TextStyle(
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Checkbox(
+              value: tarea.estaCompleta,
+              onChanged: (newValue) {
+                // Lógica para actualizar la tarea completada
+              },
+              checkColor: Colors.white,
+              fillColor: MaterialStateProperty.resolveWith((states) {
+                if (states.contains(MaterialState.selected)) {
+                  return Colors.blue;
+                }
+                return Colors.grey;
+              }),
             ),
+            IconButton(
+              icon: const Icon(
+                Icons.edit,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                // Lógica para editar la tarea
+              },
+            ),
+            IconButton(
+  icon: const Icon(
+    Icons.delete_outline,
+    color: Colors.black,
+  ),
+  onPressed: () {
+    confirmarEliminarTarea(context, tarea);
+  },)
           ],
         ),
-        child: ListTile(
-          title: Text(
-            tarea.tareaTitle,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-          subtitle: Text(
-            tarea.tareaTexto,
-            style: const TextStyle(
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Checkbox(
-                value: tarea.estaCompleta,
-                onChanged: (newValue) {
-                  // Lógica para actualizar la tarea completada
-                },
-                checkColor: Colors.white,
-                fillColor: MaterialStateProperty.resolveWith((states) {
-                  if (states.contains(MaterialState.selected)) {
-                    return Colors.blue;
-                  }
-                  return Colors.grey;
-                }),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.edit,
-                  color: Colors.black,
-                ),
-                onPressed: () {
-                  // Lógica para editar la tarea
-                },
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.black,
-                ),
-                onPressed: () {
-                  // Lógica para confirmar y eliminar la tarea
-                },
-              ),
-            ],
-          ),
-        ),
       ),
-    );
-  }
+    ),
+  );
 }
 
-  // void confirmarEliminarTarea(
-  //     BuildContext context, Tarea tarea, TareaProvider provider) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return alertDialogConfirmacion(tarea, context, provider);
-  //     },
-  //   );
-  // }
+// Función confirmarEliminarTarea
+void confirmarEliminarTarea(BuildContext context, Tarea tarea) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alertDialogConfirmacion(context, tarea);
+    },
+  );
+}
 
-  // AlertDialog alertDialogConfirmacion(
-  //     Tarea tarea, BuildContext context, TareaProvider provider) {
-  //   return AlertDialog(
-  //     shape: RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.circular(20),
-  //     ),
-  //     title: const Text(
-  //       "Confirmación",
-  //       style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
-  //     ),
-  //     content: Text(
-  //       tarea.estaCompleta
-  //           ? "Esta tarea ya está completada. ¿Estás seguro de que quieres eliminarla?"
-  //           : "Esta tarea no está completada. ¿Seguro que quieres eliminarla?",
-  //       style: const TextStyle(color: Colors.black54),
-  //     ),
-  //     actions: <Widget>[
-  //       TextButton(
-  //         onPressed: () {
-  //           Navigator.of(context).pop();
-  //         },
-  //         child: const Text(
-  //           "Cancelar",
-  //           style: TextStyle(color: Colors.red),
-  //         ),
-  //       ),
-  //       TextButton(
-  //         onPressed: () {
-  //           deleteTarea(_key, tarea, provider);
-  //           Navigator.of(context).pop();
-  //         },
-  //         child: const Text(
-  //           "Eliminar",
-  //           style: TextStyle(color: Colors.green),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
+// En la función alertDialogConfirmacion
+AlertDialog alertDialogConfirmacion(BuildContext context, Tarea tarea) {
+  return AlertDialog(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+    ),
+    title: const Text(
+      "Confirmación",
+      style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+    ),
+    content: Text(
+      "¿Estás seguro de que quieres eliminar esta tarea?",
+      style: const TextStyle(color: Colors.black54),
+    ),
+    actions: <Widget>[
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: const Text(
+          "Cancelar",
+          style: TextStyle(color: Colors.red),
+        ),
+      ),
+      TextButton(
+        onPressed: () {
+          deleteTarea(tarea);
+          Navigator.of(context).pop();
+        },
+        child: const Text(
+          "Eliminar",
+          style: TextStyle(color: Colors.green),
+        ),
+      ),
+    ],
+  );
+}
 
+// Y la función deleteTarea en la página ListTareasPage
+// En la función deleteTarea
+void deleteTarea(Tarea tarea) {
+  TaskController _taskController = TaskController();
+  _taskController.deleteTarea(tarea.id).then((_) {
+    // Tarea eliminada exitosamente
+  }).catchError((error) {
+    print("Error al eliminar la tarea: $error");
+    // Manejar el error según sea necesario
+  });
+}
+}

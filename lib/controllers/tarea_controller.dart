@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:to_do_list/controllers/tarea_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:to_do_list/models/tarea.dart';
 
-class TaskController{
+class TaskController {
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   final String collection = "tasks";
@@ -20,6 +18,7 @@ class TaskController{
       querySnapshot.docs.forEach((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         Tarea tarea = Tarea(
+          id: doc.id, // Asignar el ID de Firestore como ID de la tarea
           tareaTitle: data['tareaTitle'],
           tareaTexto: data['tareaTexto'],
           estaCompleta: data['estaCompleta'] ?? false,
@@ -31,29 +30,38 @@ class TaskController{
       throw error;
     }
   }
-}
 
-void saveTarea(GlobalKey<FormState> _key, Tarea tarea, TareaProvider provider) {
-  if (_key.currentState!.validate()) {
-    if (provider.tareas.contains(tarea)) {
-      provider.updateTarea(tarea);
-    } else {
-      provider.addTarea(tarea);
+  Future<void> deleteTarea(String tareaId) async {
+    try {
+      await db.collection(collection).doc(tareaId).delete();
+    } catch (error) {
+      throw error;
     }
   }
 }
 
-void deleteTarea(
-    GlobalKey<FormState> _key, Tarea tarea, TareaProvider provider) {
-  provider.deleteTarea(tarea);
-}
 
-void updateTareaCompleta(GlobalKey<FormState> _key, Tarea tarea,
-    TareaProvider provider, bool value) {
-  provider.updateTareaCompleta(tarea, value);
-}
+// void saveTarea(GlobalKey<FormState> _key, Tarea tarea, TareaProvider provider) {
+//   if (_key.currentState!.validate()) {
+//     if (provider.tareas.contains(tarea)) {
+//       provider.updateTarea(tarea);
+//     } else {
+//       provider.addTarea(tarea);
+//     }
+//   }
+// }
 
-String? validateField(value) {
-  return value == null || value!.isEmpty ? "Este campo es obligatorio" : null;
-}
+// void deleteTarea(
+//     GlobalKey<FormState> _key, Tarea tarea, TareaProvider provider) {
+//   provider.deleteTarea(tarea);
+// }
+
+// void updateTareaCompleta(GlobalKey<FormState> _key, Tarea tarea,
+//     TareaProvider provider, bool value) {
+//   provider.updateTareaCompleta(tarea, value);
+// }
+
+// String? validateField(value) {
+//   return value == null || value!.isEmpty ? "Este campo es obligatorio" : null;
+// }
 

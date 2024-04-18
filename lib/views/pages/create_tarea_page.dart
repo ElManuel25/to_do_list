@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:to_do_list/controllers/tarea_provider.dart';
 import 'package:to_do_list/controllers/tarea_controller.dart';
 import 'package:to_do_list/models/tarea.dart';
 
 // ignore: must_be_immutable
 class CreateTareaPage extends StatelessWidget {
-  // Atributos
   String title = "Crear tarea";
   final GlobalKey<FormState> _key = GlobalKey();
 
   Tarea tarea;
-
   TaskController _controller = TaskController();
 
   CreateTareaPage.create() : tarea = Tarea.empty();
@@ -24,25 +20,21 @@ class CreateTareaPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: Consumer<TareaProvider>(
-        builder: (_, tareaProvider, child) {
-          return formContact(tareaProvider, context);
-        },
-      ),
+      body: formContact(context),
     );
   }
 
-  Form formContact(TareaProvider provider, BuildContext context) {
+  Form formContact(BuildContext context) {
     return Form(
       key: _key,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: formElements(provider, context),
+        child: formElements(context),
       ),
     );
   }
 
-  ListView formElements(TareaProvider provider, BuildContext context) {
+  ListView formElements(BuildContext context) {
     return ListView(
       children: <Widget>[
         Column(
@@ -104,7 +96,7 @@ class CreateTareaPage extends StatelessWidget {
                   Colors.lightBlue,
                   "Guardar",
                   () {
-                    saveTarea(_key, tarea, provider);
+                    saveTarea(_key, tarea);
                     Navigator.pop(context);
                   },
                 )
@@ -136,7 +128,6 @@ class CreateTareaPage extends StatelessWidget {
     );
   }
 
-  // Función para validar un campo
   String? validateField(String? value) {
     if (value == null || value.isEmpty) {
       return 'Este campo es requerido';
@@ -144,25 +135,19 @@ class CreateTareaPage extends StatelessWidget {
     return null;
   }
 
-  // Función para guardar la tarea
-  void saveTarea(GlobalKey<FormState> key, Tarea tarea, TareaProvider provider) {
-    if (key.currentState!.validate()) {
-      // Validación exitosa, proceder a guardar la tarea
-      Map<String, dynamic> tareaMap = {
-        'tareaTitle': tarea.tareaTitle,
-        'tareaTexto': tarea.tareaTexto,
-        'estaCompleta': tarea.estaCompleta,
-      };
-      
-      _controller.create(tareaMap).then((taskId) {
-        // Tarea guardada exitosamente
-        // Actualizar el estado del proveedor si es necesario
-        provider.addTarea(tarea);
-      }).catchError((error) {
-        // Error al guardar la tarea
-        print("Error al guardar la tarea: $error");
-        // Podrías mostrar un mensaje de error al usuario si lo deseas
-      });
-    }
+  void saveTarea(GlobalKey<FormState> key, Tarea tarea) {
+  if (key.currentState!.validate()) {
+    Map<String, dynamic> tareaMap = {
+      'tareaTitle': tarea.tareaTitle,
+      'tareaTexto': tarea.tareaTexto,
+      'estaCompleta': tarea.estaCompleta,
+    };
+
+    _controller.create(tareaMap).then((taskId) {
+      tarea.id = taskId; // Almacena el ID generado por Firestore en el objeto Tarea
+    }).catchError((error) {
+      print("Error al guardar la tarea: $error");
+    });
   }
+}
 }
