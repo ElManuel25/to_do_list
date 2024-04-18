@@ -12,6 +12,8 @@ class CreateTareaPage extends StatelessWidget {
 
   Tarea tarea;
 
+  TaskController _controller = TaskController();
+
   CreateTareaPage.create() : tarea = Tarea.empty();
 
   CreateTareaPage.edit(this.tarea);
@@ -132,5 +134,35 @@ class CreateTareaPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Función para validar un campo
+  String? validateField(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Este campo es requerido';
+    }
+    return null;
+  }
+
+  // Función para guardar la tarea
+  void saveTarea(GlobalKey<FormState> key, Tarea tarea, TareaProvider provider) {
+    if (key.currentState!.validate()) {
+      // Validación exitosa, proceder a guardar la tarea
+      Map<String, dynamic> tareaMap = {
+        'tareaTitle': tarea.tareaTitle,
+        'tareaTexto': tarea.tareaTexto,
+        'estaCompleta': tarea.estaCompleta,
+      };
+      
+      _controller.create(tareaMap).then((taskId) {
+        // Tarea guardada exitosamente
+        // Actualizar el estado del proveedor si es necesario
+        provider.addTarea(tarea);
+      }).catchError((error) {
+        // Error al guardar la tarea
+        print("Error al guardar la tarea: $error");
+        // Podrías mostrar un mensaje de error al usuario si lo deseas
+      });
+    }
   }
 }
